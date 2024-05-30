@@ -1,0 +1,88 @@
+﻿@model RestaurantManagement.BackEnd.ViewModel.Admin.AdminCreateViewModel
+
+@{
+	ViewData["Title"] = "建立帳號";
+}
+
+<!-- Hero -->
+<div class="bg-body-light">
+	<div class="content content-full">
+		<div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
+			<div class="flex-grow-1">
+				<h1 class="h3 fw-bold mb-1">
+					帳號管理
+				</h1>
+			</div>
+			<nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
+				<ol class="breadcrumb breadcrumb-alt">
+					<li class="breadcrumb-item">
+						<span class="link-fx"帳號管理</span>
+					</li>
+					<li class="breadcrumb-item" aria-current="page">
+						帳號設定
+					</li>
+				</ol>
+			</nav>
+		</div>
+	</div>
+</div>
+<!-- END Hero -->
+<!-- Page Content -->
+<div class="content">
+	<!-- Dynamic Table Full -->
+	<div class="block block-rounded">
+		<div class="block-header block-header-default">
+			<h3 class="block-title">帳號設定新增</h3>
+		</div>
+		<div class="block-content block-content-full">
+			<form class="row g-3 needs-validation" novalidate="" asp-action="Create" asp-controller="Admin">
+
+				<div class="col-md-12">
+					<label for="validationCustom01" class="form-label">群組</label>
+					@Html.DropDownListFor(model => model.GroupId, new SelectList(ViewBag.adminGroup, "Value", "Text"), htmlAttributes: new { @class = "form-control" })
+				</div>
+
+				<div class="col-md-12">
+					<label for="validationCustom01" class="form-label">帳號</label>
+					<input asp-for="AdminAcc" class="form-control" type="text" />
+					<span asp-validation-for="AdminAcc" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-12">
+					<label for="validationCustom01" class="form-label">姓名</label>
+					<input asp-for="AdminName" class="form-control" type="text" />
+					<span asp-validation-for="AdminName" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-12">
+					<label for="validationCustom02" class="form-label">密碼</label>
+					<input asp-for="AdminPwd" class="form-control" type="password" />
+					<span asp-validation-for="AdminPwd" class="text-danger"></span>
+				</div>
+
+				<div class="col-md-12">
+					<label for="validationCustom02" class="form-label">啟用</label>
+					<select class="form-select" id="IsEnabled" required="" asp-for="AdminPublish">
+						<option value="0">不啟用</option>
+						<option value="1">啟用</option>
+					</select>
+					<span asp-validation-for="AdminPublish" class="text-danger"></span>
+				</div>
+
+
+				<div class="col-mt-12">
+					<button class="btn btn-primary" onclick="checkPassword();" type="submit">送出</button>
+					<a asp-action="Index" class="btn btn-primary">返回列表</a>
+				</div>
+
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
+

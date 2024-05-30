@@ -1,0 +1,114 @@
+﻿@model IEnumerable<RestaurantManagement.BackEnd.ViewModel.Member.MemberIndexViewModel>;
+@{
+    ViewData["Title"] = "客戶列表";
+}
+<!-- Hero -->
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
+            <div class="flex-grow-1">
+                <h1 class="h3 fw-bold mb-1">
+                    客戶管理
+                </h1>
+            </div>
+            <nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-alt">
+                    <li class="breadcrumb-item">
+                        <span class="link-fx">客戶管理</span>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">
+                        客戶設定
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- END Hero -->
+
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block block-rounded">
+        <div class="block-header block-header-default">
+
+            <h3 class="block-title">客戶設定列表</h3>
+
+            <div class="nav navbar-right panel_toolbox">
+                <a type="button" asp-action="Create" asp-controller="Member" class="btn btn-minw btn-primary"><i class="fa fa-plus"></i>新增</a>
+            </div>
+
+        </div>
+        <div class="block-content block-content-full">
+            <table class="table table-bordered table-striped table-vcenter js-dataTable-full">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.MemberId)</th>
+                        <th>@Html.DisplayNameFor(model => model.MemberAccount)</th>
+                        <th>@Html.DisplayNameFor(model => model.MemberName)</th>
+                        <th>@Html.DisplayNameFor(model => model.MemberPhone)</th>
+                        <th>@Html.DisplayNameFor(model => model.MemberEmail)</th>
+                        <th class="d-none d-sm-table-cell">@Html.DisplayNameFor(model => model.CreateTime)</th>
+                        <th>處理</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.MemberId)
+                            </td>
+
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.MemberAccount)
+                            </td>
+
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.MemberName)
+                            </td>
+
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.MemberPhone)
+                            </td>
+
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.MemberEmail)
+                            </td>
+
+                            <td class="fw-semibold fs-sm">
+                                @Html.DisplayFor(modelItem => item.CreateTime)
+                            </td>
+
+                            
+                            <td>
+                                @Html.ActionLink("編輯", "Edit", new { id=item.MemberId}) |
+                                <a href="#" onclick="Delete(@item.MemberId)">刪除</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+</div>
+
+<script>
+	const Delete = (id) => {
+		$.ajax({
+			url: '/BackEnd/Member/Delete',
+			type: 'GET',
+			dataType: 'json',
+			data: {id: id},
+			success: function (response) {
+				alert(response);
+				location.reload();
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr.responseText);
+			}
+		});
+	};
+</script>

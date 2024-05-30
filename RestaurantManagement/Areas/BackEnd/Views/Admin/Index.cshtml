@@ -1,0 +1,119 @@
+﻿@model IEnumerable<RestaurantManagement.BackEnd.ViewModel.Admin.AdminIndexViewModel>;
+@{
+    ViewData["Title"] = "帳號列表";
+}
+<!-- Hero -->
+<div class="bg-body-light">
+    <div class="content content-full">
+        <div class="d-flex flex-column flex-sm-row justify-content-sm-between align-items-sm-center py-2">
+            <div class="flex-grow-1">
+                <h1 class="h3 fw-bold mb-1">
+                    帳號管理
+                </h1>
+            </div>
+            <nav class="flex-shrink-0 mt-3 mt-sm-0 ms-sm-3" aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-alt">
+                    <li class="breadcrumb-item">
+                        <span class="link-fx" >帳號管理</span>
+                    </li>
+                    <li class="breadcrumb-item" aria-current="page">
+                        帳號設定
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<!-- END Hero -->
+
+<!-- Page Content -->
+<div class="content">
+    <!-- Dynamic Table Full -->
+    <div class="block block-rounded">
+        <div class="block-header block-header-default">
+
+            <h3 class="block-title">帳號設定列表</h3>
+
+            <div class="nav navbar-right panel_toolbox">
+                <a type="button" asp-action="Create" asp-controller="Admin" class="btn btn-minw btn-primary"><i class="fa fa-plus"></i>新增</a>
+            </div>
+
+        </div>
+        <div class="block-content block-content-full">
+            <table class="table table-bordered table-striped table-vcenter js-dataTable-full">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.AdminId)</th>
+                        <th>@Html.DisplayNameFor(model => model.GroupName)</th>
+                        <th>@Html.DisplayNameFor(model => model.AdminAcc)</th>
+                        <th class="d-none d-sm-table-cell" style="width: 30%;">@Html.DisplayNameFor(model => model.AdminName)</th>
+                        <th class="d-none d-sm-table-cell" style="width: 15%;">@Html.DisplayNameFor(model => model.AdminPublish)</th>
+                        <th style="width: 15%;">處理</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.AdminId)
+                            </td>
+
+                            <td class="fs-sm">
+                                @Html.DisplayFor(modelItem => item.GroupName)
+                            </td>
+
+                            <td class="fw-semibold fs-sm">
+                                @Html.DisplayFor(modelItem => item.AdminAcc)
+                            </td>
+
+                            <td class="d-none d-sm-table-cell fs-sm">
+                                @Html.DisplayFor(modelItem => item.AdminName)
+                            </td>
+
+                            <td class="d-none d-sm-table-cell">
+                                <span class="fs-xs fw-semibold d-inline-block py-1 px-3 rounded-pill bg-info-light text-info">
+                                    @{
+                                        if (@item.AdminPublish == 1)
+                                        {
+                                            <span>啟用</span>
+                                        }
+                                        else
+                                        {
+                                            <span>未啟用</span>
+                                        }
+                                    }
+                                </span>
+                            </td>
+
+                            <td>
+                                @Html.ActionLink("編輯", "Edit", new { id=item.AdminId}) |
+                                <a href="#" onclick="Delete(@item.AdminId)">刪除</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- END Dynamic Table Full -->
+</div>
+
+<script>
+	const Delete = (id) => {
+		$.ajax({
+			url: '/BackEnd/Admin/Delete',
+			type: 'GET',
+			dataType: 'json',
+			data: {id: id},
+			success: function (response) {
+				alert(response);
+				location.reload();
+			},
+			error: function (xhr, status, error) {
+				console.log(xhr.responseText);
+			}
+		});
+	};
+</script>

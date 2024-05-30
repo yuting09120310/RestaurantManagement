@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    @{
+        Html.RenderPartial("_HeadPartial");
+    }
+  </head>
+
+  <body>
+
+    <div id="page-container" class="sidebar-o sidebar-dark enable-page-overlay side-scroll page-header-fixed main-content-narrow">
+      
+      @{
+          Html.RenderPartial("_NavPartial");
+      }
+
+
+      @{
+          Html.RenderPartial("_SidebarPartial");
+      }
+
+      @{
+          Html.RenderPartial("_HeaderPartial");
+      }
+
+      <main id="main-container">
+
+          @RenderBody()
+
+      </main>
+
+      @{
+          Html.RenderPartial("_FooterPartial");
+      }
+
+    </div>
+
+    @{
+        Html.RenderPartial("_ScriptPartial");
+    }
+
+    @RenderSection("Scripts", required: false)
+  </body>
+</html>

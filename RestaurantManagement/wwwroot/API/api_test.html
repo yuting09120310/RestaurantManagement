@@ -1,0 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API測試頁面</title>
+    <script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="text"], textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        select {
+            width: 100%;
+        }
+
+        input[type="button"] {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            input[type="button"]:hover {
+                background-color: #0056b3;
+            }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        #txtResult {
+            font-family: monospace;
+        }
+
+
+        textarea {
+            width: 96%;
+            height: 400px
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API 測試頁面</h1>
+        <form>
+            <label for="cmbMethod">傳送方法</label>
+            <select id="cmbMethod" name="cmbMethod">
+                <option value="GET" selected>GET</option>
+                <option value="POST">POST</option>
+            </select>
+
+            <label for="cmbAction">變更行為</label>
+            <select id="cmbAction" name="cmbAction" onchange="showFields(this.value)">
+                <option value="SelectAll">Select All</option>
+                <option value="Select">Select</option>
+                <option value="Insert">Insert</option>
+                <option value="Update">Update</option>
+                <option value="Delete">Delete</option>
+            </select>
+
+            <label for="txtTableName" id="lblTableName">資料表名稱</label>
+            <input type="text" id="txtTableName" name="txtTableName">
+
+            <label for="txtFields" id="lblFields" style="display:none">欄位名稱</label>
+            <input type="text" id="txtFields" name="txtFields" style="display:none">
+
+            <label for="txtValues" id="lblValues" style="display:none">欄位數值</label>
+            <input type="text" id="txtValues" name="txtValues" style="display:none">
+
+            <label for="txtId" id="lblId" style="display:none">異動條件</label>
+            <input type="text" id="txtId" name="txtId" style="display:none">
+
+            <input type="button" id="btnSend" name="btnSend" value="送出" onclick="APItest();">
+        </form>
+
+        <br />
+
+        <textarea id="txtResult" name="txtResult" readonly></textarea>
+    </div>
+
+    <script>
+        function showFields(action) {
+            const fieldLabels = document.querySelectorAll('#lblFields, #lblValues, #lblId');
+            const fields = document.querySelectorAll('#txtFields, #txtValues, #txtId');
+            const tableNameLabel = document.querySelector('#lblTableName');
+
+            // 隱藏所有欄位和標籤
+            fieldLabels.forEach(label => label.style.display = 'none');
+            fields.forEach(field => field.style.display = 'none');
+            tableNameLabel.style.display = 'none';
+
+            switch (action) {
+                case 'SelectAll':
+                    tableNameLabel.style.display = 'block';
+                    break;
+                case 'Select':
+                case 'Insert':
+                case 'Update':
+                    // 顯示資料表名稱、欄位名稱、欄位數值
+                    tableNameLabel.style.display = 'block';
+                    fieldLabels[0].style.display = 'block'; // 欄位名稱標籤
+                    fieldLabels[1].style.display = 'block'; // 欄位數值標籤
+                    fields[0].style.display = 'block'; // 欄位名稱輸入框
+                    fields[1].style.display = 'block'; // 欄位數值輸入框
+
+                    if (action === 'Update') {
+                        // 顯示異動條件
+                        fieldLabels[2].style.display = 'block'; // 異動條件標籤
+                        fields[2].style.display = 'block'; // 異動條件輸入框
+                    }
+                    break;
+                case 'Delete':
+                    // 只顯示資料表名稱和異動條件
+                    tableNameLabel.style.display = 'block';
+                    fieldLabels[2].style.display = 'block'; // 異動條件標籤
+                    fields[2].style.display = 'block'; // 異動條件輸入框
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
+        function APItest() {
+            let apiURL = $('#cmbAction').val();
+            let apiMethod = $('#cmbMethod').val();
+            let apiAction = $('#cmbAction').val();
+            let apiArgs = {};
+
+            if (apiAction === "SelectAll" || apiAction === "Delete") {
+                apiArgs.TableName = $('#txtTableName').val();
+                apiArgs.id = $('#txtId').val();
+            } else if (apiAction === "Select" || apiAction === "Insert") {
+                apiArgs.tableName = $('#txtTableName').val();
+                apiArgs.fields = $('#txtFields').val();
+                apiArgs.values = $('#txtValues').val();
+            } else if (apiAction === "Update") {
+                apiArgs.tableName = $('#txtTableName').val();
+                apiArgs.fields = $('#txtFields').val();
+                apiArgs.values = $('#txtValues').val();
+                apiArgs.id = $('#txtId').val();
+            }
+
+            $('#txtResult').val('');
+
+            $.ajax({
+                url: apiURL,
+                data: apiArgs,
+                type: apiMethod,
+                success: function (result) {
+                    $('#txtResult').val(result);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert('API 發送錯誤：' + xhr.status);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
