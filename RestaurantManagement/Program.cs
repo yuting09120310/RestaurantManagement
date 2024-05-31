@@ -1,26 +1,25 @@
-using Microsoft.AspNetCore.Mvc.Razor;
+ï»¿using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.OpenApi.Models;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Swagger ³]©w
+// Swagger è¨­å®š
 var key = Encoding.ASCII.GetBytes("MySuperSecretKeyThatIsVeryLongAndSecure12345!");
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "À\ÆUAPI",
+        Title = "é¤å»³API",
         Description = "Your API Description"
     });
 });
 
-
-
-// Add services to the container.
+// å°‡æœå‹™æ–°å¢è‡³å®¹å™¨ä¸­
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
@@ -31,23 +30,19 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// ±q³]©wÀÉ¤¤¨ú±o³s±µ¦r¦ê
+// å¾è¨­å®šæª”ä¸­å–å¾—é€£æ¥å­—ä¸²
 var connectionString = builder.Configuration.GetConnectionString("DBConnectionString");
 
-// °t¸m IDbConnection ª`¤J
+// è¨­å®š IDbConnection æ³¨å…¥
 builder.Services.AddScoped<IDbConnection>((sp) => new SqlConnection(connectionString));
-
 
 builder.Services.Configure<RazorViewEngineOptions>(options => {
     options.ViewLocationFormats.Clear();
 
     options.ViewLocationFormats.Add("/Areas/BackEnd/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
-    options.ViewLocationFormats.Add("/Areas/BackEnd/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
     options.ViewLocationFormats.Add("/Areas/BackEnd/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
-
     options.ViewLocationFormats.Add("/FrontEnd/Views/{1}/{0}" + RazorViewEngine.ViewExtension);
     options.ViewLocationFormats.Add("/FrontEnd/Views/Shared/{0}" + RazorViewEngine.ViewExtension);
-
     options.ViewLocationFormats.Add("/API/Views/{0}" + RazorViewEngine.ViewExtension);
 });
 
@@ -68,7 +63,7 @@ app.UseSession();
 
 app.UseAuthorization();
 
-// ±Ò¥Î Swagger ¤¤¶¡¥ó
+// å•Ÿç”¨ Swagger ä¸­ä»‹è»Ÿé«”
 app.UseSwagger(c =>
 {
     c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
@@ -76,7 +71,7 @@ app.UseSwagger(c =>
 
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "À\ÆUAPI");
+    c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "é¤å»³API");
     c.RoutePrefix = "api/swagger";
 });
 
