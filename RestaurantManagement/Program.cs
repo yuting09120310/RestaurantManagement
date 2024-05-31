@@ -1,8 +1,24 @@
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.OpenApi.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Swagger 設定
+var key = Encoding.ASCII.GetBytes("MySuperSecretKeyThatIsVeryLongAndSecure12345!"); // 你的密鑰，應該保存在安全的地方
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "餐廳API",
+        Description = "Your API Description"
+    });
+});
+
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -52,12 +68,25 @@ app.UseSession();
 
 app.UseAuthorization();
 
+// 啟用 Swagger 中間件
+app.UseSwagger(c =>
+{
+    c.RouteTemplate = "api/swagger/{documentName}/swagger.json";
+});
+
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "餐廳API");
+    c.RoutePrefix = "api/swagger"; // 將 Swagger UI 設定為 /api/swagger 路徑
+});
+
+
 app.MapControllerRoute(
     name: "Areas",
     pattern: "{area:exists}/{controller}/{action=Index}/{id?}/");
 
 app.MapControllerRoute(
-    name: "API",
+    name: "ForntEnd",
     pattern: "{controller}/{action=Index}/{id?}/");
 
 app.Run();

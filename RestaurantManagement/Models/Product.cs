@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Components.Web.Virtualization;
+using System;
 using System.Collections.Generic;
 
 namespace RestaurantManagement.Models
@@ -10,8 +11,6 @@ namespace RestaurantManagement.Models
         public string? Description { get; set; }
         public string ProductImg1 { get; set; } = null!;
         public decimal Price { get; set; }
-        public int ProductClassId { get; set; }
-
-        public virtual ProductClass Class { get; set; } = null!;
+        public virtual int ProductClassId { get; set; }
     }
 }
