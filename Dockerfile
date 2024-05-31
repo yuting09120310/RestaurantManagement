@@ -1,20 +1,22 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+# Adjust DOTNET_OS_VERSION as desired
+ARG DOTNET_OS_VERSION="-alpine"
+ARG DOTNET_SDK_VERSION=6.0
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:${DOTNET_SDK_VERSION}${DOTNET_OS_VERSION} AS build
 WORKDIR /src
-COPY ["RestaurantManagement.csproj", "./"]
-RUN dotnet restore "RestaurantManagement.csproj"
-COPY . .
-WORKDIR "/src/."
-RUN dotnet build "RestaurantManagement.csproj" -c Release -o /app/build
 
-FROM build AS publish
-RUN dotnet publish "RestaurantManagement.csproj" -c Release -o /app/publish
+# copy everything
+COPY . ./
+# restore as distinct layers
+RUN dotnet restore
+# build and publish a release
+RUN dotnet publish -c Release -o /app
 
-FROM base AS final
+# final stage/image
+FROM mcr.microsoft.com/dotnet/aspnet:${DOTNET_SDK_VERSION}
+ENV ASPNETCORE_URLS http://+:8080
+ENV ASPNETCORE_ENVIRONMENT Production
+EXPOSE 8080
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "RestaurantManagement.dll"]
+COPY --from=build /app .
+ENTRYPOINT [ "dotnet", "RestaurantManagement.dll" ]
