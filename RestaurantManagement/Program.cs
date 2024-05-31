@@ -7,7 +7,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Swagger 設定
-var key = Encoding.ASCII.GetBytes("MySuperSecretKeyThatIsVeryLongAndSecure12345!"); // 你的密鑰，應該保存在安全的地方
+var key = Encoding.ASCII.GetBytes("MySuperSecretKeyThatIsVeryLongAndSecure12345!");
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -77,7 +77,7 @@ app.UseSwagger(c =>
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "餐廳API");
-    c.RoutePrefix = "api/swagger"; // 將 Swagger UI 設定為 /api/swagger 路徑
+    c.RoutePrefix = "api/swagger";
 });
 
 
