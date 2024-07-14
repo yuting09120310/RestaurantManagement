@@ -48,7 +48,6 @@
                         <th>@Html.DisplayNameFor(model => model.MemberName)</th>
                         <th>@Html.DisplayNameFor(model => model.MemberPhone)</th>
                         <th>@Html.DisplayNameFor(model => model.MemberEmail)</th>
-                        <th class="d-none d-sm-table-cell">@Html.DisplayNameFor(model => model.CreateTime)</th>
                         <th>處理</th>
                     </tr>
                 </thead>
@@ -75,10 +74,6 @@
 
                             <td class="fs-sm">
                                 @Html.DisplayFor(modelItem => item.MemberEmail)
-                            </td>
-
-                            <td class="fw-semibold fs-sm">
-                                @Html.DisplayFor(modelItem => item.CreateTime)
                             </td>
 
                             

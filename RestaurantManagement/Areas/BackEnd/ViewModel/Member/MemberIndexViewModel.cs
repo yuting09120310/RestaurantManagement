@@ -24,9 +24,6 @@ namespace RestaurantManagement.BackEnd.ViewModel.Member
 		[Display(Name = "信箱")]
 		public string MemberEmail { get; set; }
 
-
-		[Display(Name = "建立時間")]
-		public DateTime CreateTime { get; set; }
 	}
 
 }
