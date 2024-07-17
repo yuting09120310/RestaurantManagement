@@ -11,7 +11,6 @@ namespace RestaurantManagement.Models
         public string ContactMail { get; set; } = null!;
         public string ContactTxt { get; set; } = null!;
         public string? ContactReTxt { get; set; }
-        public DateTime CreateTime { get; set; }
         public string Ip { get; set; } = null!;
     }
 }

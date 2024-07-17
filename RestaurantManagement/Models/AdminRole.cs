@@ -5,7 +5,7 @@ namespace RestaurantManagement.Models
 {
     public partial class AdminRole
     {
-        public int RoleId { get; set; }
+        public int RoleNum { get; set; }
         public int GroupId { get; set; }
         public int MenuSubId { get; set; }
         public string Role { get; set; } = null!;

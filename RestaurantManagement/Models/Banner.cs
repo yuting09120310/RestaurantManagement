@@ -8,7 +8,7 @@ namespace RestaurantManagement.Models
         public int BannerId { get; set; }
         public int? BannerSort { get; set; }
         public string BannerTitle { get; set; } = null!;
-        public string? BannerDescription { get; set; }
+        public string BannerDescription { get; set; } = null!;
         public string BannerContxt { get; set; } = null!;
         public string BannerImg1 { get; set; } = null!;
         public string? BannerImgUrl { get; set; }
