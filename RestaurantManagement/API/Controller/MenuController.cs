@@ -22,13 +22,21 @@ namespace RestaurantManagement.API.Controller
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            string strSQL = "SELECT * FROM Product";
+            try
+            {
+                string strSQL = "SELECT * FROM Product";
 
-            _dbConnection.Open();
-            List<Product> products = (await _dbConnection.QueryAsync<Product>(strSQL)).ToList();
-            _dbConnection.Close();
+                _dbConnection.Open();
+                List<Product> products = (await _dbConnection.QueryAsync<Product>(strSQL)).ToList();
+                _dbConnection.Close();
 
-            return Ok(products);
+                return Ok(new { success = true, data = products });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "內部伺服器錯誤。" });
+            }
         }
+
     }
 }

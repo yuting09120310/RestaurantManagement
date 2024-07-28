@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @{
+        @Html.Partial("_FrontEndHeadPartial")
+    }
+</head>
+
+<body class="default-theme">
+
+    <div class="page-wrapper">
+
+        <div class="preloader"></div>
+
+        @{
+            @Html.Partial("_FrontEndNavbarPartial")
+        }
+
+        @RenderBody()
+
+        @{
+            @Html.Partial("_FrontEndFooterPartial")
+        }
+    </div>
+
+
+    @RenderSection("Scripts", required: false)
+    @{
+        @Html.Partial("_FrontEndScriptPartial")
+    }
+
+</body>
+</html>

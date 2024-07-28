@@ -82,6 +82,6 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "ForntEnd",
-    pattern: "{controller}/{action=Index}/{id?}/");
+    pattern: "{controller=Default}/{action=Index}/{id?}/");
 
 app.Run();

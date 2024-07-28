@@ -24,10 +24,24 @@ namespace RestaurantManagement.API.Controller
         [HttpPost]
         public async Task<ActionResult> Post(LoginDto loginDto)
         {
-            string strSQL = "SELECT * FROM Member WHERE MemberAccount = @MemberAccount AND MemberPassword = @MemberPassword";
-            Member member = await  _dbConnection.QueryFirstAsync<Member>(strSQL, new { MemberAccount = loginDto.MemberAccount, MemberPassword = loginDto.MemberPassword });
-            return Ok(member);
+            try
+            {
+                string strSQL = "SELECT * FROM Member WHERE MemberAccount = @MemberAccount AND MemberPassword = @MemberPassword";
+                Member member = await _dbConnection.QueryFirstOrDefaultAsync<Member>(strSQL, new { MemberAccount = loginDto.MemberAccount, MemberPassword = loginDto.MemberPassword });
+
+                if (member == null)
+                {
+                    return Ok(new { success = false, message = "帳號或密碼錯誤。" });
+                }
+
+                return Ok(new { success = true, data = member });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "內部伺服器錯誤。" });
+            }
         }
-        
+
+
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using RestaurantManagement.API.Dtos;
 using System;
 using System.Data;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace RestaurantManagement.API.Controller
                 var cartItems = await _dbConnection.QueryAsync<CartItemDto>(sql, new { MemberId = memberId });
                 _dbConnection.Close();
 
-                return Ok(cartItems);
+                return Ok(new { success = true, message = "獲取成功", data = cartItems });
             }
             catch (Exception ex)
             {
@@ -55,7 +56,6 @@ namespace RestaurantManagement.API.Controller
                 return StatusCode(500, "內部伺服器錯誤。");
             }
         }
-
 
         [HttpPost("add")]
         public async Task<ActionResult> AddCartItem([FromBody] CartCreateDto cartDto)
@@ -67,30 +67,64 @@ namespace RestaurantManagement.API.Controller
 
             try
             {
-                string insertSql = @"
-                    INSERT INTO [dbo].[Cart] (MemberId, ProductId, Quantity, CreatedDate)
-                    VALUES (@MemberId, @ProductId, @Quantity, GETDATE());";
-
                 _dbConnection.Open();
-                await _dbConnection.ExecuteAsync(insertSql, cartDto);
-                _dbConnection.Close();
 
-                return Ok("成功新增購物車項目。");
+                // 檢查是否已經有相同的品項在購物車中
+                string checkSql = @"
+                    SELECT 
+                        COUNT(*)
+                    FROM 
+                        [dbo].[Cart]
+                    WHERE 
+                        MemberId = @MemberId AND ProductId = @ProductId;";
+
+                int count = await _dbConnection.ExecuteScalarAsync<int>(checkSql, new
+                {
+                    cartDto.MemberId,
+                    cartDto.ProductId
+                });
+
+                if (count > 0)
+                {
+                    // 更新數量
+                    string updateSql = @"
+                        UPDATE [dbo].[Cart]
+                        SET Quantity = Quantity + @Quantity
+                        WHERE MemberId = @MemberId AND ProductId = @ProductId;";
+
+                    await _dbConnection.ExecuteAsync(updateSql, new
+                    {
+                        cartDto.Quantity,
+                        cartDto.MemberId,
+                        cartDto.ProductId
+                    });
+                }
+                else
+                {
+                    // 新增品項
+                    string insertSql = @"
+                        INSERT INTO [dbo].[Cart] (MemberId, ProductId, Quantity, CreatedDate)
+                        VALUES (@MemberId, @ProductId, @Quantity, GETDATE());";
+
+                    await _dbConnection.ExecuteAsync(insertSql, cartDto);
+                }
+
+                _dbConnection.Close();
+                return Ok(new { success = true, message = "成功新增或更新購物車項目。" });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "無法新增購物車項目。");
-                return StatusCode(500, "內部伺服器錯誤。");
+                _logger.LogError(ex, "無法新增或更新購物車項目。");
+                return StatusCode(500, new { success = false, message = "內部伺服器錯誤。" });
             }
         }
-
 
         [HttpPut("update")]
         public async Task<ActionResult> UpdateCartItem([FromBody] CartUpdateDto cartDto)
         {
             if (cartDto == null || cartDto.CartId <= 0 || cartDto.MemberId <= 0 || cartDto.ProductId <= 0 || cartDto.Quantity <= 0)
             {
-                return BadRequest("Invalid request data.");
+                return BadRequest(new { success = false, message = "Invalid request data." });
             }
 
             try
@@ -101,43 +135,51 @@ namespace RestaurantManagement.API.Controller
                     WHERE CartId = @CartId;";
 
                 _dbConnection.Open();
-                await _dbConnection.ExecuteAsync(updateSql, cartDto);
+                int rowsAffected = await _dbConnection.ExecuteAsync(updateSql, cartDto);
                 _dbConnection.Close();
 
-                return Ok($"成功更新購物車項目：{cartDto.CartId}");
+                if (rowsAffected > 0)
+                {
+                    return Ok(new { success = true, message = $"成功更新購物車項目：{cartDto.CartId}" });
+                }
+                else
+                {
+                    return Ok(new { success = false, message = $"更新購物車項目失敗：{cartDto.CartId}" });
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "無法更新購物車項目。");
-                return StatusCode(500, "內部伺服器錯誤。");
+                return StatusCode(500, new { success = false, message = "內部伺服器錯誤。" });
             }
         }
 
-
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeleteCartItem([FromBody] CartDeleteDto deleteDto)
+        public async Task<IActionResult> DeleteCartItem([FromBody] CartDeleteDto deleteDto)
         {
-            if (deleteDto == null || deleteDto.CartId <= 0)
-            {
-                return BadRequest("Invalid delete request.");
-            }
-
             try
             {
                 string deleteSql = @"
-                    DELETE FROM [dbo].[Cart]
-                    WHERE CartId = @CartId;";
+                DELETE FROM [dbo].[Cart]
+                WHERE CartId = @CartId;";
 
                 _dbConnection.Open();
-                await _dbConnection.ExecuteAsync(deleteSql, new { CartId = deleteDto.CartId });
+                int rowsAffected = await _dbConnection.ExecuteAsync(deleteSql, new { CartId = deleteDto.CartId });
                 _dbConnection.Close();
 
-                return Ok($"成功刪除購物車項目：{deleteDto.CartId}");
+                if (rowsAffected > 0)
+                {
+                    return Ok(new { success = true, message = $"成功刪除購物車項目：{deleteDto.CartId}" });
+                }
+                else
+                {
+                    return Ok(new { success = false, message = $"刪除購物車項目失敗：{deleteDto.CartId}" });
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "無法刪除購物車項目：{CartId}", deleteDto.CartId);
-                return StatusCode(500, "內部伺服器錯誤。");
+                _logger.LogError(ex, "無法刪除購物車項目。");
+                return StatusCode(500, new { success = false, message = "內部伺服器錯誤。" });
             }
         }
     }
