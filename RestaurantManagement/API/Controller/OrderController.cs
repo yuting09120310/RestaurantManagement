@@ -43,7 +43,7 @@ namespace RestaurantManagement.API.Controller
                 var orders = await _dbConnection.QueryAsync<OrderDto>(sql, new { MemberId = memberId });
                 _dbConnection.Close();
 
-                return Ok(orders);
+                return Ok(new { success = true, message = "獲取成功", data = orders });
             }
             catch (Exception ex)
             {
