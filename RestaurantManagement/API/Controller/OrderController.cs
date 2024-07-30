@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using RestaurantManagement.API.Dtos;
+using RestaurantManagement.Models;
 using System;
 using System.Data;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace RestaurantManagement.API.Controller
             }
         }
 
-        [HttpGet("{orderId}/details")]
+        [HttpGet("OrderDetails/{orderId}")]
         public async Task<ActionResult> OrderDetails(int orderId)
         {
             try
@@ -72,7 +73,7 @@ namespace RestaurantManagement.API.Controller
                 var orderDetails = await _dbConnection.QueryAsync<OrderDetailDto>(sql, new { OrderId = orderId });
                 _dbConnection.Close();
 
-                return Ok(orderDetails);
+                return Ok(new { success = true, message = "獲取成功", data = orderDetails });
             }
             catch (Exception ex)
             {
